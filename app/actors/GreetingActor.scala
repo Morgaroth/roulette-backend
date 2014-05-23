@@ -11,6 +11,8 @@ class GreetingActor extends Actor {
 }
 
 object GreetingActor {
+
   import conf.Configuration._
+
   val actor = Akka.system.actorOf(Props[GreetingActor], "myactor")
 }

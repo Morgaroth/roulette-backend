@@ -4,17 +4,19 @@ import play.api._
 import play.api.mvc._
 import scala.concurrent.Future
 import akka.pattern.ask
-import actors.GreetingActor
-import Configuration._
+import actors.{ConsoleLoggerActor, GreetingActor}
+import scala.concurrent.ExecutionContext.Implicits.global
+import conf.Configuration._
+
 
 object Application extends Controller {
 
-  def greet(name: String) = Action.async {
-    import conf.Configuration._
-    import scala.concurrent.ExecutionContext.Implicits.global
-
-    val ala: Future[Any] = GreetingActor.actor ? name
-    Future(Ok(""))
+  def greet(name: String) = {
+    ConsoleLoggerActor.actor ! name
+    Action.async {
+      val result: Future[Any] = GreetingActor.actor ? name
+      result.map(response => Ok(response.asInstanceOf[String]))
+    }
   }
 
 }
